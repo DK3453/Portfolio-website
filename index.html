@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dibyanshu Kanungo - Presentation Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif;
+            background-color: #121212; /* Darkest base for body */
+            color: #e0e0e0; 
+        }
+        .scroll-container {
+            width: 100%;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory; 
+            scroll-behavior: smooth; 
+        }
+        .section {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem; /* Base padding for mobile */
+            position: relative; 
+            overflow: hidden; 
+            border-bottom: 1px solid #2a2a2a; 
+        }
+        .section::before { /* Overlay for subtle depth, less strong now */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.1); /* Very subtle overlay */
+            z-index: 1;
+        }
+        .section-content-wrapper { 
+            position: relative; 
+            z-index: 2;
+            max-width: 1100px; 
+            width: 90%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: auto; 
+            max-height: calc(100vh - 6rem); 
+            overflow-y: auto; 
+            background-color: rgba(26, 26, 26, 0.9); 
+            padding: 1.5rem;
+            border-radius: 0.75rem; 
+            border: 1px solid #333; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+        }
+         .section-content-wrapper::-webkit-scrollbar { width: 6px; }
+         .section-content-wrapper::-webkit-scrollbar-track { background: rgba(30,30,30,0.7); border-radius: 3px; }
+         .section-content-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+         .section-content-wrapper::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+
+
+        @media (min-width: 768px) { 
+            .section {
+                padding: 2rem; 
+            }
+            .section-content-wrapper {
+                 padding: 2.5rem; 
+                 width: 85%;
+            }
+        }
+        @media (min-width: 1024px) {
+            .section-content-wrapper {
+                 width: 75%;
+                 padding: 3rem;
+            }
+        }
+        
+        .section:nth-child(odd) {
+             background-color: #1a1a1a; /* Primary dark */
+        }
+         .section:nth-child(even) {
+             background-color: #202020; /* Slightly lighter dark */
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .accent-color {
+            color: #d4af37; 
+        }
+        .icon-prefix { /* Class for icons before headings */
+            margin-right: 0.75rem;
+            color: #d4af37; /* Accent color for these icons */
+            font-size: 0.9em; /* Slightly smaller than heading text */
+        }
+
+        /* --- Animations --- */
+        .animate-on-view {
+            opacity: 0;
+            will-change: transform, opacity;
+            transition: opacity 0.7s ease-out, 
+                        transform 0.7s ease-out;
+        }
+        .section.is-visible .animate-on-view {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1); 
+        }
+
+        /* Animation Variants: Initial States */
+        .animate-float-up { transform: translateY(25px); } 
+        .animate-float-left { transform: translateX(-25px); } 
+        .animate-float-right { transform: translateX(25px); } 
+        .animate-scale-in { transform: scale(0.97); } 
+        .animate-float-up-strong { transform: translateY(40px); } 
+
+
+        /* Staggering Delays - applied when section.is-visible */
+         .section.is-visible .animate-on-view.delay-base { transition-delay: 0.15s; } 
+         .section.is-visible .animate-on-view.delay-1 { transition-delay: 0.3s; }  
+         .section.is-visible .animate-on-view.delay-2 { transition-delay: 0.45s; } 
+         .section.is-visible .animate-on-view.delay-3 { transition-delay: 0.6s; }  
+         .section.is-visible .animate-on-view.delay-4 { transition-delay: 0.75s; } 
+
+
+        /* --- Navigation --- */
+        #side-nav {
+            position: fixed;
+            top: 50%;
+            right: 15px; 
+            transform: translateY(-50%);
+            z-index: 1001; 
+        }
+         @media (min-width: 768px) {
+            #side-nav {
+                right: 25px;
+            }
+         }
+        #side-nav ul { list-style: none; padding: 0; margin: 0; }
+        #side-nav li a {
+            display: block; width: 10px; height: 10px; margin: 12px 0; 
+            background-color: #888; 
+            border-radius: 50%;
+            transition: background-color 0.3s ease, transform 0.3s ease; position: relative;
+        }
+         @media (min-width: 768px) {
+            #side-nav li a {
+                width: 12px; height: 12px; margin: 15px 0;
+            }
+         }
+        #side-nav li a:hover,
+        #side-nav li a.active { background-color: #d4af37; transform: scale(1.3); }
+        #side-nav li a span { 
+            visibility: hidden; width: 120px; background-color: #d4af37; color: #1a1a1a;
+            text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute;
+            z-index: 1; top: -5px; right: 150%; opacity: 0; transition: opacity 0.3s;
+            font-size: 0.8rem; font-weight: 500;
+        }
+        #side-nav li a:hover span { visibility: visible; opacity: 1; }
+        #side-nav li a span::after { 
+            content: ""; position: absolute; top: 50%; left: 100%; margin-top: -5px;
+            border-width: 5px; border-style: solid; border-color: transparent transparent transparent #d4af37;
+        }
+
+        .section-heading {
+            font-size: 2rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;
+            display: inline-flex; /* For aligning icon with text */
+            align-items: center;
+        }
+         @media (min-width: 768px) { .section-heading { font-size: 3rem; margin-bottom: 1.5rem;} }
+        
+        .hero-name { font-size: 2.5rem; } 
+        @media (min-width: 768px) { .hero-name { font-size: 4rem; } } 
+
+        .hero-tagline { font-size: 1rem; color: #c0c0c0; }
+        @media (min-width: 768px) { .hero-tagline { font-size: 1.25rem; } }
+
+        /* Project Section Specific Layout */
+        .projects-header { 
+            margin-bottom: 1rem; 
+            width: 100%; 
+            max-width: 900px; 
+        }
+         @media (min-width: 768px) {
+            .projects-header {
+                margin-bottom: 1.5rem;
+            }
+         }
+
+        .project-cards-container {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            align-items: stretch; 
+            gap: 1rem; 
+            overflow-y: auto; 
+            width: 100%;
+            max-width: 900px; 
+            max-height: calc(100% - 7rem); 
+            padding: 0.5rem; 
+        }
+         @media (min-width: 768px) {
+            .project-cards-container {
+                gap: 1.5rem;
+                max-height: calc(100% - 9rem); 
+            }
+         }
+        .project-cards-container::-webkit-scrollbar { width: 5px; }
+        .project-cards-container::-webkit-scrollbar-track { background: rgba(43,43,43,0.8); border-radius: 3px; }
+        .project-cards-container::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+        .project-cards-container::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+
+        .project-card { 
+            background-color: #222; 
+            padding: 1.5rem; 
+            border: 1px solid #383838; 
+            border-radius: 0.5rem; 
+            width: calc(100% - 1rem); 
+            display: flex;
+            flex-direction: column;
+            text-align: left; 
+            flex-grow: 0; 
+            flex-shrink: 0; 
+            overflow: hidden; 
+         }
+         @media (min-width: 640px) { 
+             .project-card {
+                width: calc(50% - 1rem); 
+             }
+         }
+         @media (min-width: 1024px) { 
+            .project-card {
+                 width: calc(33.333% - 1rem); 
+                 max-width: 320px;
+            }
+         }
+         
+        .project-card-icon {
+            font-size: 2.5rem; 
+            color: #d4af37; 
+            margin-bottom: 1rem;
+            text-align: center; 
+        }
+        
+        .project-title { font-size: 1.1rem; margin-bottom: 0.25rem; color: #fff; text-align: center;} 
+         @media (min-width: 768px) { .project-title { font-size: 1.25rem; } }
+        .project-tools { font-size: 0.75rem; margin-bottom: 0.5rem; color: #aaa; text-align: center;} 
+        .project-description { font-size: 0.8rem; color: #b0b0b0; line-height: 1.5; }
+         @media (min-width: 768px) { .project-description { font-size: 0.875rem; } }
+        
+        .skill-category-title { 
+            font-size: 1.1rem; font-weight: 600; color: #fff; 
+            margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #444;
+            display: inline-flex; align-items: center; /* For icon alignment */
+        }
+         @media (min-width: 768px) { .skill-category-title { font-size: 1.25rem; } }
+        .timeline-item { text-align: left; max-width: 500px; margin: 0 auto; position: relative; padding-left: 30px; } 
+        .timeline-icon { 
+            position: absolute; 
+            left: 0; 
+            top: 5px; 
+            color: #d4af37; 
+            font-size: 1.2rem; 
+        }
+        .contact-button { padding: 0.8rem 2rem; font-size: 1rem; 
+            background-color: #d4af37; color: #1a1a1a; border-radius: 0.375rem; 
+            font-weight: 600; text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            border: 1px solid #d4af37; letter-spacing: 0.05em; display: inline-flex; /* For icon alignment */
+            align-items: center;
+        }
+         @media (min-width: 768px) { .contact-button { padding: 1rem 2.5rem; font-size: 1.1rem; } }
+        .contact-button:hover {
+            background-color: #c09b2e; border-color: #c09b2e; color: #111111;
+            transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 15px rgba(212, 175, 55, 0.2); 
+        }
+        .social-icon { 
+            color: #b0b0b0; 
+            font-size: 1.75rem; 
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-icon:hover {
+            color: #d4af37; 
+            transform: translateY(-3px) scale(1.1); 
+        }
+
+        /* Custom scrollbar for main container */
+        .scroll-container::-webkit-scrollbar { width: 5px; }
+        .scroll-container::-webkit-scrollbar-track { background: #1a1a1a; }
+        .scroll-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .scroll-container::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <nav id="side-nav">
+        <ul>
+            <li><a href="#home" class="active" data-section="home"><span>Home</span></a></li>
+            <li><a href="#about" data-section="about"><span>About</span></a></li>
+            <li><a href="#projects" data-section="projects"><span>Projects</span></a></li>
+            <li><a href="#skills" data-section="skills"><span>Skills</span></a></li>
+            <li><a href="#education" data-section="education"><span>Education</span></a></li>
+            <li><a href="#certifications" data-section="certifications"><span>Certifications</span></a></li>
+            <li><a href="#contact" data-section="contact"><span>Contact</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="scroll-container">
+
+        <section id="home" class="section">
+            <div class="section-content-wrapper">
+                <h1 class="hero-name font-serif mb-6 animate-on-view animate-float-up delay-base">
+                    Hi, I'm <span class="accent-color">Dibyanshu Kanungo</span>
+                </h1>
+                <p class="hero-tagline mb-10 animate-on-view animate-float-up delay-1">
+                    Detail-oriented analyst transforming complex data into clear, actionable insights.
+                </p>
+                <a href="#projects" class="contact-button inline-block animate-on-view animate-scale-in delay-2">
+                    <i class="fas fa-arrow-down mr-2"></i>View My Work
+                </a>
+            </div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="section-content-wrapper max-w-3xl">
+                <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Introduction</p>
+                <h2 class="section-heading font-serif mb-8 animate-on-view animate-float-up delay-1">
+                    <i class="fas fa-user-circle icon-prefix"></i>About Me
+                </h2>
+                <div class="text-lg text-gray-300 leading-relaxed space-y-4 animate-on-view animate-float-up delay-2"> 
+                    <p>
+                        Hello! I'm Dibyanshu, an enthusiastic and detail-oriented individual with strong analytical skills. I'm currently seeking opportunities to gain experience and further enhance my overall skill set.
+                    </p>
+                    <p>
+                        Proficient in many technical tools and possessing good communication skills, I am eager to contribute to a dynamic organization by leveraging my developing technical and business acumen to deliver impactful insights.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section">
+             <div class="section-content-wrapper max-w-6xl w-full">
+                <div class="projects-header">
+                    <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Portfolio</p>
+                    <h2 class="section-heading font-serif animate-on-view animate-scale-in delay-1">
+                        <i class="fas fa-folder-open icon-prefix"></i>Selected Projects
+                    </h2>
+                </div>
+                <div class="project-cards-container">
+                    <div class="project-card animate-on-view animate-float-left delay-2">
+                        <div class="project-card-icon"><i class="fas fa-chart-pie"></i></div>
+                        <h3 class="project-title font-serif">HR Analytics Dashboard</h3>
+                        <p class="project-tools">PowerBI / Excel / DAX</p>
+                        <ul class="project-description list-disc list-inside space-y-1 mt-2">
+                            <li>Analyzed data for 300+ employees to visualize key HR metrics.</li>
+                            <li>Tracked employee numbers and average salaries across various timeframes.</li>
+                            <li>Monitored demographics and attrition, identifying a 15% attrition spike that prompted policy review.</li>
+                            <li>Utilized DAX queries to derive new insightful values from the database.</li>
+                        </ul>
+                    </div>
+                    <div class="project-card animate-on-view animate-float-up-strong delay-3">
+                        <div class="project-card-icon"><i class="fas fa-coffee"></i></div>
+                        <h3 class="project-title font-serif">Coffee Sales Report</h3>
+                        <p class="project-tools">Advanced Excel / Data Visualization</p>
+                         <ul class="project-description list-disc list-inside space-y-1 mt-2">
+                            <li>Developed a 5-page interactive dashboard for comprehensive sales analysis.</li>
+                            <li>Implemented Xlookup, Index-Match, and Multiple If functions for dynamic spreadsheet interactivity.</li>
+                            <li>Ensured data clarity through meticulous date and number formatting.</li>
+                            <li>Employed Pivot Tables and Pivot Charts for effective data visualization.</li>
+                        </ul>
+                    </div>
+                    <div class="project-card animate-on-view animate-float-right delay-2">
+                         <div class="project-card-icon"><i class="fas fa-database"></i></div>
+                        <h3 class="project-title font-serif">Walmart Dataset Analysis</h3>
+                        <p class="project-tools">Python / Pandas / MySQL / Jupyter</p>
+                        <ul class="project-description list-disc list-inside space-y-1 mt-2">
+                            <li>Processed a Kaggle dataset of 10,000+ Walmart transactions using Python in VSCode.</li>
+                            <li>Utilized Pandas for data cleaning: removed duplicates, handled null values, and converted data types.</li>
+                            <li>Prepared and saved a refined dataset of over 9,000 rows.</li>
+                            <li>Established a connection to a MySQL database for further analysis and querying.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section">
+             <div class="section-content-wrapper max-w-4xl w-full">
+                <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Capabilities</p>
+                <h2 class="section-heading font-serif mb-8 md:mb-12 animate-on-view animate-float-up delay-1">
+                     <i class="fas fa-cogs icon-prefix"></i>Skills & Proficiencies
+                </h2>
+                <div class="grid md:grid-cols-3 gap-6 md:gap-8 text-left">
+                    <div class="animate-on-view animate-float-left delay-2">
+                        <h4 class="skill-category-title"><i class="fas fa-chart-line icon-prefix"></i>Analytical & Business</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm md:text-base">
+                            <li>Business Analysis</li>
+                            <li>Data Analysis</li>
+                            <li>Data Visualization</li>
+                            <li>Project Management</li>
+                            <li>Basic Auditing</li>
+                        </ul>
+                    </div>
+                     <div class="animate-on-view animate-float-up-strong delay-3">
+                        <h4 class="skill-category-title"><i class="fas fa-laptop-code icon-prefix"></i>Technical Tools</h4>
+                         <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm md:text-base">
+                            <li>Microsoft Excel</li>
+                            <li>Power BI (DAX)</li>
+                            <li>MySQL</li>
+                            <li>Python (Basics, Pandas)</li>
+                            <li>Tableau</li>
+                            <li>Jira</li>
+                            <li>Microsoft PowerPoint</li>
+                        </ul>
+                    </div>
+                    <div class="animate-on-view animate-float-right delay-2">
+                        <h4 class="skill-category-title"><i class="fas fa-users icon-prefix"></i>Soft Skills</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm md:text-base">
+                            <li>Communication</li>
+                            <li>Problem Solving</li>
+                            <li>Teamwork</li>
+                            <li>Time Management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="section">
+            <div class="section-content-wrapper max-w-3xl">
+                <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Background</p>
+                <h2 class="section-heading font-serif mb-8 md:mb-12 animate-on-view animate-float-up delay-1">
+                    <i class="fas fa-graduation-cap icon-prefix"></i>Education
+                </h2>
+                <div class="relative space-y-8">
+                    <div class="timeline-item animate-on-view animate-float-left delay-2">
+                        <div class="timeline-icon"><i class="fas fa-university"></i></div>
+                        <h4 class="timeline-title"><span class="accent-color">Bachelor of Business Administration, Specialization in Business Analytics</span></h4>
+                        <p class="timeline-subtitle">Institute of Technology & Science, Ghaziabad</p>
+                        <p class="timeline-date">2021 - 2024</p>
+                    </div>
+                    <div class="timeline-item animate-on-view animate-float-right delay-3">
+                        <div class="timeline-icon"><i class="fas fa-school"></i></div>
+                        <h4 class="timeline-title"><span class="accent-color">Senior Secondary (Commerce with Maths)</span></h4>
+                        <p class="timeline-subtitle">Central Board of Secondary Education</p>
+                        <p class="timeline-date">2020 - 2021</p>
+                    </div>
+                    <div class="timeline-item animate-on-view animate-float-left delay-4">
+                        <div class="timeline-icon"><i class="fas fa-book-reader"></i></div>
+                        <h4 class="timeline-title"><span class="accent-color">Secondary</span></h4>
+                        <p class="timeline-subtitle">Central Board of Secondary Education</p>
+                        <p class="timeline-date">2018 - 2019</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="certifications" class="section">
+            <div class="section-content-wrapper max-w-3xl">
+                <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Credentials</p>
+                <h2 class="section-heading font-serif mb-8 md:mb-12 animate-on-view animate-float-up delay-1">
+                     <i class="fas fa-certificate icon-prefix"></i>Certifications
+                </h2>
+                <div class="space-y-4 text-left"> 
+                     <p class="animate-on-view animate-float-left delay-2 text-sm md:text-base"><i class="fas fa-award mr-2 accent-color"></i>Career Essentials in Data Analysis by Microsoft and LinkedIn</p>
+                     <p class="animate-on-view animate-float-right delay-3 text-sm md:text-base"><i class="fas fa-award mr-2 accent-color"></i>Google Analytics for Beginners by Google</p>
+                     <p class="animate-on-view animate-float-left delay-4 text-sm md:text-base"><i class="fas fa-award mr-2 accent-color"></i>PwC Switzerland - Power BI Job Simulation by Forage</p>
+                     <p class="animate-on-view animate-float-right delay-2 text-sm md:text-base"><i class="fas fa-award mr-2 accent-color"></i>Business Analysis and Process Management by Coursera</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="section-content-wrapper max-w-2xl">
+                <p class="text-sm uppercase tracking-widest accent-color font-semibold mb-3 animate-on-view animate-scale-in delay-base">Let's Connect</p>
+                <h2 class="section-heading font-serif mb-6 animate-on-view animate-float-up delay-1">
+                    <i class="fas fa-paper-plane icon-prefix"></i>Get In Touch
+                </h2>
+                <p class="text-lg text-gray-300 mb-10 leading-relaxed animate-on-view animate-float-up delay-2">
+                    Available for new opportunities. Let's discuss how my analytical skills can benefit your organization.
+                </p>
+                <a href="mailto:dibyanshukanungo@gmail.com" class="contact-button inline-block mb-8 animate-on-view animate-scale-in delay-3">
+                    Send an Email
+                </a>
+                <div class="flex justify-center space-x-6 animate-on-view animate-float-up delay-4">
+                    <a href="https://linkedin.com/in/dibyanshu-kanungo-354a75288" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="LinkedIn Profile">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/DK3453/Dibyanshu-Projects" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="GitHub Profile">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div> 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('#side-nav a');
+            const scrollContainer = document.querySelector('.scroll-container');
+
+            const observerOptions = {
+                root: scrollContainer, 
+                rootMargin: '0px',
+                threshold: 0.55 // Trigger when 55% of the section is visible
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const navLink = document.querySelector(`#side-nav a[data-section="${id}"]`);
+
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if(navLink) navLink.classList.add('active');
+                    } else {
+                         entry.target.classList.remove('is-visible'); 
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if(targetSection) {
+                        if (!targetSection.classList.contains('is-visible')) {
+                            sections.forEach(sec => sec.classList.remove('is-visible')); 
+                            targetSection.classList.add('is-visible');
+                        }
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            const workButton = document.querySelector('a[href="#projects"].contact-button');
+            if(workButton) {
+                 workButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const projectsSection = document.querySelector('#projects');
+                    if (projectsSection) {
+                        if (!projectsSection.classList.contains('is-visible')) {
+                             sections.forEach(sec => sec.classList.remove('is-visible'));
+                             projectsSection.classList.add('is-visible');
+                        }
+                        projectsSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                 });
+            }
+
+            const firstSection = document.querySelector('.section');
+            if (firstSection && !firstSection.classList.contains('is-visible')) {
+                setTimeout(() => {
+                    firstSection.classList.add('is-visible');
+                }, 100);
+            }
+        });
+    </script>
+
+</body>
+</html>
