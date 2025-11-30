@@ -17,7 +17,8 @@
                         serif: ['Playfair Display', 'serif'],
                     },
                     colors: {
-                        dark: '#0f172a',
+                        dark: '#050505',
+                        card: 'rgba(255, 255, 255, 0.03)',
                         accent: {
                             teal: '#2dd4bf',
                             purple: '#a855f7',
@@ -27,8 +28,10 @@
                         }
                     },
                     animation: {
-                        'blob': 'blob 7s infinite',
+                        'blob': 'blob 10s infinite',
                         'float': 'float 6s ease-in-out infinite',
+                        'twinkle': 'twinkle 4s ease-in-out infinite',
+                        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         blob: {
@@ -40,6 +43,10 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-20px)' },
+                        },
+                        twinkle: {
+                            '0%, 100%': { opacity: 0.3 },
+                            '50%': { opacity: 1 },
                         }
                     }
                 }
@@ -48,36 +55,46 @@
     </script>
 
     <style>
-        /* --- Core Layout for Presentation Mode --- */
+        /* --- Core Layout --- */
         html, body {
             height: 100%;
-            overflow: hidden;
+            margin: 0;
             background-color: #050505;
             color: #e2e8f0;
+            overflow: hidden; 
         }
 
         .scroll-container {
             width: 100%;
             height: 100vh;
-            overflow-y: scroll;
+            overflow-y: auto;
             scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
         }
 
         .section {
-            height: 100vh;
+            min-height: 100vh; 
             width: 100%;
-            scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
             position: relative;
-            /* overflow: hidden; Removed to allow better layout on small screens */
+            padding: 4rem 1.5rem;
+            scroll-snap-align: start;
+            overflow: hidden; 
         }
 
-        /* --- Modern Background Effects --- */
+        @media (min-width: 768px) {
+            .section {
+                height: 100vh; 
+                padding: 2rem;
+            }
+        }
+
+        /* --- Custom Background Patterns --- */
+        
+        /* 1. Gradient Mesh (Home) */
         .bg-gradient-mesh {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -87,142 +104,141 @@
             pointer-events: none;
         }
 
-        .animated-blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.4;
-            animation: blob 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
+        /* 2. Starfield (About) */
+        .bg-stars {
+            background-color: #050505;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+            animation: twinkle 5s infinite alternate;
         }
 
-        /* --- Glassmorphism Cards --- */
+        /* 3. Data Grid (Projects) */
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        /* 4. Crosshairs (Skills) */
+        .bg-crosshairs {
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.6;
+        }
+
+        /* 5. Blueprint Grid (Education) - NEW */
+        .bg-blueprint {
+            background-color: #050505;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            background-position: center center;
+            opacity: 0.8;
+        }
+
+        /* 6. Dotted Connectivity (Contact) */
+        .bg-dots {
+            background-color: #050505;
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.4;
+        }
+
+        /* Blobs */
+        .animated-blob {
+            position: absolute;
+            filter: blur(60px);
+            z-index: 0;
+            opacity: 0.4;
+            animation: blob 15s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        @media (min-width: 768px) {
+             .animated-blob { filter: blur(90px); opacity: 0.35; }
+        }
+
+        /* --- Glassmorphism --- */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             border-radius: 1.5rem;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .glass-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
-        /* --- Typography & Gradients --- */
-        .text-gradient-teal {
-            background: linear-gradient(135deg, #2dd4bf 0%, #0ea5e9 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .text-gradient-purple {
-            background: linear-gradient(135deg, #c084fc 0%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .text-gradient-orange {
-            background: linear-gradient(135deg, #fb923c 0%, #db2777 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* --- Typography --- */
+        .text-gradient-teal { background: linear-gradient(135deg, #2dd4bf, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-purple { background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-orange { background: linear-gradient(135deg, #fb923c, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-gradient-blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* --- Side Navigation --- */
+        /* --- Nav --- */
         #side-nav {
-            position: fixed;
-            top: 50%;
-            right: 25px;
-            transform: translateY(-50%);
-            z-index: 50;
+            position: fixed; top: 50%; right: 25px; transform: translateY(-50%); z-index: 50; display: none;
         }
+        @media (min-width: 768px) { #side-nav { display: block; } }
+
         .nav-dot {
-            width: 12px;
-            height: 12px;
-            background-color: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            position: relative;
-            margin: 15px 0;
-            cursor: pointer;
+            width: 10px; height: 10px; background-color: rgba(255,255,255,0.15); border-radius: 50%;
+            transition: all 0.3s ease; position: relative; margin: 18px 0; cursor: pointer;
         }
         .nav-dot::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px; height: 24px;
-            border: 1px solid transparent;
-            border-radius: 50%;
-            transition: all 0.3s ease;
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 24px; height: 24px; border: 1px solid transparent; border-radius: 50%; transition: all 0.3s ease;
         }
-        .nav-dot.active { transform: scale(1.3); }
-        .nav-dot.active.teal { background-color: #2dd4bf; box-shadow: 0 0 15px rgba(45,212,191,0.5); }
-        .nav-dot.active.purple { background-color: #a855f7; box-shadow: 0 0 15px rgba(168,85,247,0.5); }
-        .nav-dot.active.orange { background-color: #f97316; box-shadow: 0 0 15px rgba(249,115,22,0.5); }
-        .nav-dot.active.blue { background-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.5); }
-        .nav-dot.active.green { background-color: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.5); }
+        .nav-dot:hover::before { border-color: rgba(255,255,255,0.2); }
+        .nav-dot.active { transform: scale(1.4); background-color: white; }
+        
+        /* Dot Colors */
+        .nav-dot.active.teal { background-color: #2dd4bf; box-shadow: 0 0 15px #2dd4bf; }
+        .nav-dot.active.purple { background-color: #a855f7; box-shadow: 0 0 15px #a855f7; }
+        .nav-dot.active.orange { background-color: #f97316; box-shadow: 0 0 15px #f97316; }
+        .nav-dot.active.blue { background-color: #3b82f6; box-shadow: 0 0 15px #3b82f6; }
 
         .nav-tooltip {
-            position: absolute;
-            right: 25px;
-            top: 50%;
-            transform: translateY(-50%) translateX(10px);
-            background-color: rgba(15, 23, 42, 0.9);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            pointer-events: none;
+            position: absolute; right: 30px; top: 50%; transform: translateY(-50%) translateX(10px);
+            background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
+            color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; pointer-events: none; border: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-dot:hover .nav-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(-50%) translateX(0);
-        }
+        .nav-dot:hover .nav-tooltip { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
         /* --- Scrollbar --- */
         .scroll-container::-webkit-scrollbar { width: 6px; }
-        .scroll-container::-webkit-scrollbar-track { background: #0f172a; }
-        .scroll-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .scroll-container::-webkit-scrollbar-track { background: #050505; }
+        .scroll-container::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
         /* --- Animations --- */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-        .section.is-visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Stagger Delays */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .section.is-visible .reveal { opacity: 1; transform: translateY(0); }
         .delay-100 { transition-delay: 100ms; }
         .delay-200 { transition-delay: 200ms; }
         .delay-300 { transition-delay: 300ms; }
-        .delay-400 { transition-delay: 400ms; }
-        
-        .content-wrapper {
-            max-width: 1200px;
-            width: 100%;
-            z-index: 10;
-        }
-
-        /* Typewriter Cursor */
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            background-color: #2dd4bf;
-            animation: blink 1s infinite;
-        }
+        .content-wrapper { max-width: 1200px; width: 100%; z-index: 10; }
+        .cursor { display: inline-block; width: 2px; background-color: #2dd4bf; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
     </style>
 </head>
 <body>
@@ -230,36 +246,12 @@
     <!-- Navigation -->
     <nav id="side-nav">
         <ul>
-            <li class="nav-item">
-                <div class="nav-dot teal" onclick="scrollToSection('home')" data-section="home">
-                    <span class="nav-tooltip">Home</span>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-dot purple" onclick="scrollToSection('about')" data-section="about">
-                    <span class="nav-tooltip">About</span>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-dot orange" onclick="scrollToSection('projects')" data-section="projects">
-                    <span class="nav-tooltip">Projects</span>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-dot blue" onclick="scrollToSection('skills')" data-section="skills">
-                    <span class="nav-tooltip">Skills</span>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-dot purple" onclick="scrollToSection('education')" data-section="education">
-                    <span class="nav-tooltip">Education</span>
-                </div>
-            </li>
-            <li class="nav-item">
-                <div class="nav-dot orange" onclick="scrollToSection('contact')" data-section="contact">
-                    <span class="nav-tooltip">Contact</span>
-                </div>
-            </li>
+            <li class="nav-item"><div class="nav-dot teal" onclick="scrollToSection('home')" data-section="home"><span class="nav-tooltip">Home</span></div></li>
+            <li class="nav-item"><div class="nav-dot purple" onclick="scrollToSection('about')" data-section="about"><span class="nav-tooltip">About</span></div></li>
+            <li class="nav-item"><div class="nav-dot orange" onclick="scrollToSection('projects')" data-section="projects"><span class="nav-tooltip">Projects</span></div></li>
+            <li class="nav-item"><div class="nav-dot blue" onclick="scrollToSection('skills')" data-section="skills"><span class="nav-tooltip">Skills</span></div></li>
+            <li class="nav-item"><div class="nav-dot purple" onclick="scrollToSection('education')" data-section="education"><span class="nav-tooltip">Education</span></div></li>
+            <li class="nav-item"><div class="nav-dot orange" onclick="scrollToSection('contact')" data-section="contact"><span class="nav-tooltip">Contact</span></div></li>
         </ul>
     </nav>
 
@@ -267,153 +259,156 @@
         
         <!-- HOME SECTION -->
         <section id="home" class="section">
-            <div class="animated-blob w-96 h-96 bg-accent-teal rounded-full top-10 left-10 mix-blend-multiply blur-xl animate-blob"></div>
-            <div class="animated-blob w-96 h-96 bg-purple-600 rounded-full bottom-10 right-10 mix-blend-multiply blur-xl animate-blob animation-delay-2000"></div>
             <div class="bg-gradient-mesh"></div>
+            
+            <!-- Simple Floating Blobs -->
+            <div class="animated-blob w-72 h-72 md:w-[600px] md:h-[600px] bg-accent-teal rounded-full top-[-10%] left-[-10%] mix-blend-multiply opacity-20 animate-blob"></div>
+            <div class="animated-blob w-72 h-72 md:w-[600px] md:h-[600px] bg-purple-600 rounded-full bottom-[-10%] right-[-10%] mix-blend-multiply opacity-20 animate-blob animation-delay-2000"></div>
 
-            <div class="content-wrapper text-center px-4">
-                <h1 class="reveal delay-100 font-serif text-5xl md:text-8xl font-bold mb-6 text-white leading-tight">
+            <div class="content-wrapper text-center px-4 relative z-10">
+                <h1 class="reveal delay-100 font-serif text-4xl md:text-8xl font-bold mb-4 md:mb-6 text-white leading-tight">
                     Hi, I'm <br>
                     <span class="text-gradient-teal">Dibyanshu Kanungo</span>
                 </h1>
-                
-                <div class="reveal delay-200 h-8 md:h-12 mb-8 flex justify-center items-center text-xl md:text-3xl text-gray-400 font-light">
+                <div class="reveal delay-200 h-16 md:h-12 mb-8 flex flex-col md:flex-row justify-center items-center text-lg md:text-3xl text-gray-400 font-light">
                     <span>Transforming complexity into&nbsp;</span>
-                    <span id="typewriter" class="text-white font-medium"></span>
-                    <span class="cursor h-6 md:h-10 ml-1"></span>
+                    <div class="flex items-center">
+                        <span id="typewriter" class="font-medium"></span>
+                        <span class="cursor h-6 md:h-10 ml-1"></span>
+                    </div>
                 </div>
-
-                <div class="reveal delay-300 flex justify-center gap-4">
-                    <button onclick="scrollToSection('projects')" class="px-8 py-3 bg-accent-teal text-dark font-bold rounded-full hover:bg-teal-300 transition-colors shadow-lg shadow-teal-500/30">
+                <div class="reveal delay-300 flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="scrollToSection('projects')" class="px-8 py-3 bg-accent-teal text-dark font-bold rounded-full hover:bg-teal-300 transition-all transform hover:scale-105 shadow-lg shadow-teal-500/20">
                         View Work
                     </button>
-                    <button onclick="scrollToSection('contact')" class="px-8 py-3 border border-gray-600 rounded-full hover:border-gray-400 hover:bg-white/5 transition-all">
+                    <button onclick="scrollToSection('contact')" class="px-8 py-3 border border-gray-600 rounded-full hover:border-white hover:bg-white/5 transition-all text-gray-300 hover:text-white">
                         Contact Me
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- ABOUT SECTION -->
+        <!-- ABOUT SECTION: Starfield -->
         <section id="about" class="section">
-            <div class="bg-gradient-mesh"></div>
-            <div class="content-wrapper max-w-4xl px-4 flex flex-col items-center">
-                <h2 class="reveal font-serif text-4xl md:text-5xl font-bold mb-12 text-center">
+            <div class="absolute inset-0 bg-stars z-0"></div> <!-- Starfield Background -->
+            
+            <div class="content-wrapper max-w-4xl px-4 flex flex-col items-center relative z-10">
+                <h2 class="reveal font-serif text-3xl md:text-5xl font-bold mb-8 md:mb-12 text-center">
                     <span class="text-gradient-purple">About Me</span>
                 </h2>
                 
-                <div class="reveal delay-100 glass-card p-8 md:p-12 w-full text-center md:text-left relative overflow-hidden">
-                    <div class="relative z-10">
-                        <p class="text-lg md:text-xl text-gray-300 leading-relaxed mb-6">
-                            Enthusiastic and detail-oriented individual with strong analytical skills. I am proficient in technical tools like <span class="text-accent-teal">Microsoft Excel, PowerBI, and Python</span>, eager to contribute to a dynamic organization by leveraging my skills to deliver impactful insights.
-                        </p>
-                        
-                        <div class="mt-8 pt-8 border-t border-gray-700/50">
-                            <h3 class="text-accent-purple font-medium text-sm tracking-widest uppercase mb-4 text-center md:text-left">Personal Interests</h3>
-                            <div class="flex flex-wrap justify-center md:justify-start gap-4">
-                                <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm flex items-center gap-2"><i class="fas fa-book-open text-accent-purple"></i> Sci-Fi Books</span>
-                                <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm flex items-center gap-2"><i class="fas fa-satellite text-accent-purple"></i> Astronomy</span>
-                                <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm flex items-center gap-2"><i class="fas fa-running text-accent-purple"></i> Cricket</span>
-                            </div>
+                <div class="reveal delay-100 glass-card p-6 md:p-12 w-full text-center md:text-left">
+                    <p class="text-base md:text-xl text-gray-300 leading-relaxed mb-8">
+                        Enthusiastic and detail-oriented individual with strong analytical skills. I am proficient in technical tools like <span class="text-accent-teal font-medium">Microsoft Excel, PowerBI, and Python</span>, eager to contribute to a dynamic organization by leveraging my skills to deliver impactful insights.
+                    </p>
+                    
+                    <div class="pt-8 border-t border-gray-700/50">
+                        <h3 class="text-accent-purple font-medium text-xs md:text-sm tracking-widest uppercase mb-5 text-center md:text-left">Personal Interests</h3>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4">
+                            <span class="px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm flex items-center gap-2 text-purple-200"><i class="fas fa-book-open"></i> Sci-Fi Books</span>
+                            <span class="px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm flex items-center gap-2 text-purple-200"><i class="fas fa-satellite"></i> Astronomy</span>
+                            <span class="px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm flex items-center gap-2 text-purple-200"><i class="fas fa-running"></i> Cricket</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PROJECTS SECTION -->
+        <!-- PROJECTS SECTION: Data Grid -->
         <section id="projects" class="section">
-            <div class="animated-blob w-[500px] h-[500px] bg-orange-600/20 rounded-full top-0 right-0 blur-3xl animate-blob"></div>
+            <div class="absolute inset-0 bg-grid z-0"></div> <!-- Data Grid Background -->
+            <div class="animated-blob w-[400px] h-[400px] bg-orange-600 rounded-full top-[-100px] right-[-100px] opacity-20 blur-3xl animate-blob z-0"></div>
 
-            <div class="content-wrapper px-4">
-                <div class="text-center mb-12 reveal">
-                    <p class="text-accent-orange font-medium tracking-widest text-sm uppercase mb-2">Portfolio</p>
-                    <h2 class="font-serif text-4xl md:text-5xl font-bold">Selected <span class="text-gradient-orange">Projects</span></h2>
-                    <a href="https://github.com/DK3453/Dibyanshu-Projects" target="_blank" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mt-4 text-sm">
-                        <span>View All on GitHub</span> <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
+            <div class="content-wrapper px-4 relative z-10">
+                <div class="text-center mb-8 md:mb-12 reveal">
+                    <p class="text-accent-orange font-medium tracking-widest text-xs md:text-sm uppercase mb-2">Portfolio</p>
+                    <h2 class="font-serif text-3xl md:text-5xl font-bold">Selected <span class="text-gradient-orange">Projects</span></h2>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-6">
-                    
-                    <!-- Card 1 -->
-                    <div class="reveal delay-100 glass-card p-6 flex flex-col h-full">
-                        <div class="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Project 1 -->
+                    <div class="reveal delay-100 glass-card p-6 flex flex-col h-full group">
+                        <div class="h-12 w-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-chart-pie"></i>
                         </div>
                         <h3 class="text-xl font-serif font-bold mb-2">HR Analytics Dashboard</h3>
-                        <p class="text-sm text-gray-400 mb-4 font-mono">PowerBI • Excel • DAX</p>
+                        <p class="text-xs text-gray-400 mb-4 font-mono">PowerBI • Excel • DAX</p>
                         <p class="text-gray-300 text-sm leading-relaxed">
                             Analyzed data for 300+ employees. Monitored demographics and attrition, identifying a 15% spike that prompted policy review using DAX queries.
                         </p>
                     </div>
 
-                    <!-- Card 2 -->
-                    <div class="reveal delay-200 glass-card p-6 flex flex-col h-full">
-                        <div class="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6">
+                    <!-- Project 2 -->
+                    <div class="reveal delay-200 glass-card p-6 flex flex-col h-full group">
+                        <div class="h-12 w-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-coffee"></i>
                         </div>
                         <h3 class="text-xl font-serif font-bold mb-2">Coffee Sales Report</h3>
-                        <p class="text-sm text-gray-400 mb-4 font-mono">Advanced Excel</p>
+                        <p class="text-xs text-gray-400 mb-4 font-mono">Advanced Excel</p>
                         <p class="text-gray-300 text-sm leading-relaxed">
                             Developed a 5-page interactive dashboard. Implemented Xlookup, Index-Match, and Pivot Charts for dynamic sales visualization.
                         </p>
                     </div>
 
-                    <!-- Card 3 -->
-                    <div class="reveal delay-300 glass-card p-6 flex flex-col h-full">
-                        <div class="h-12 w-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6">
+                    <!-- Project 3 -->
+                    <div class="reveal delay-300 glass-card p-6 flex flex-col h-full group">
+                        <div class="h-12 w-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-accent-orange text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-database"></i>
                         </div>
-                        <h3 class="text-xl font-serif font-bold mb-2">Walmart Dataset Analysis</h3>
-                        <p class="text-sm text-gray-400 mb-4 font-mono">Python • MySQL • Pandas</p>
+                        <h3 class="text-xl font-serif font-bold mb-2">Walmart Analysis</h3>
+                        <p class="text-xs text-gray-400 mb-4 font-mono">Python • MySQL • Pandas</p>
                         <p class="text-gray-300 text-sm leading-relaxed">
                             Processed 10,000+ transactions. Cleaned data using Pandas, handling null values and establishing a MySQL connection for querying.
                         </p>
                     </div>
-
+                </div>
+                
+                <div class="text-center mt-8 reveal delay-300">
+                     <a href="https://github.com/DK3453/Dibyanshu-Projects" target="_blank" class="inline-flex items-center gap-2 text-gray-400 hover:text-accent-orange transition-colors text-sm">
+                        <span>View All on GitHub</span> <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- SKILLS SECTION -->
+        <!-- SKILLS SECTION: Crosshairs Grid -->
         <section id="skills" class="section">
-            <div class="bg-gradient-mesh"></div>
-            <div class="content-wrapper max-w-5xl px-4">
-                 <h2 class="reveal font-serif text-4xl md:text-5xl font-bold mb-16 text-center">
-                    Technical <span class="text-gradient-teal">Arsenal</span>
+            <div class="absolute inset-0 bg-crosshairs z-0"></div> <!-- Crosshairs Background -->
+            <div class="animated-blob w-[400px] h-[400px] bg-blue-700 rounded-full bottom-[-100px] left-[-100px] opacity-10 blur-3xl animate-blob z-0"></div>
+            
+            <div class="content-wrapper max-w-5xl px-4 relative z-10">
+                 <h2 class="reveal font-serif text-3xl md:text-5xl font-bold mb-10 md:mb-16 text-center">
+                    Technical <span class="text-gradient-blue">Arsenal</span>
                 </h2>
 
-                <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Technical Skills -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <div class="reveal delay-100">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3 text-white">
-                            <i class="fas fa-laptop-code text-accent-teal"></i> Software & Tools
+                        <h3 class="text-lg md:text-xl font-bold mb-6 flex items-center gap-3 text-white">
+                            <i class="fas fa-laptop-code text-accent-blue"></i> Software & Tools
                         </h3>
-                        <div class="glass-card p-8">
-                            <div class="flex flex-wrap gap-3">
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Microsoft Excel</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Power BI (DAX)</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">MySQL</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Python (Basics)</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Tableau</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">PowerPoint</span>
+                        <div class="glass-card p-6 md:p-8">
+                            <div class="flex flex-wrap gap-2 md:gap-3">
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">Microsoft Excel</span>
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">Power BI (DAX)</span>
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">MySQL</span>
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">Python (Basics)</span>
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">Tableau</span>
+                                <span class="px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-xs md:text-sm text-blue-200">PowerPoint</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Soft Skills & Domain -->
                     <div class="reveal delay-200">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3 text-white">
+                        <h3 class="text-lg md:text-xl font-bold mb-6 flex items-center gap-3 text-white">
                             <i class="fas fa-brain text-accent-purple"></i> Capabilities
                         </h3>
-                        <div class="glass-card p-8">
-                            <div class="flex flex-wrap gap-3">
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Business Analysis</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Financial Analysis</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Market Research</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Problem Solving</span>
-                                <span class="px-3 py-1.5 rounded bg-white/5 border border-white/10 text-sm">Communication</span>
+                        <div class="glass-card p-6 md:p-8">
+                            <div class="flex flex-wrap gap-2 md:gap-3">
+                                <span class="px-3 py-1.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm text-purple-200">Business Analysis</span>
+                                <span class="px-3 py-1.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm text-purple-200">Financial Analysis</span>
+                                <span class="px-3 py-1.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm text-purple-200">Market Research</span>
+                                <span class="px-3 py-1.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm text-purple-200">Problem Solving</span>
+                                <span class="px-3 py-1.5 rounded bg-purple-500/10 border border-purple-500/20 text-xs md:text-sm text-purple-200">Communication</span>
                             </div>
                         </div>
                     </div>
@@ -421,89 +416,83 @@
             </div>
         </section>
 
-        <!-- EDUCATION SECTION -->
+        <!-- EDUCATION SECTION: Blueprint Grid -->
         <section id="education" class="section">
-             <div class="animated-blob w-[600px] h-[600px] bg-purple-500/10 rounded-full top-0 right-0 blur-3xl animate-blob"></div>
+             <div class="absolute inset-0 bg-blueprint z-0"></div> <!-- Blueprint Background -->
+             <div class="animated-blob w-[500px] h-[500px] bg-purple-900 rounded-full top-0 right-[-100px] opacity-20 blur-3xl animate-blob z-0"></div>
              
-             <div class="content-wrapper max-w-5xl px-4 grid md:grid-cols-2 gap-12">
+             <div class="content-wrapper max-w-5xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 relative z-10">
                 
-                <!-- Education Column -->
                 <div class="reveal delay-100">
-                    <h2 class="font-serif text-3xl font-bold mb-8 text-gradient-purple">Education</h2>
+                    <h2 class="font-serif text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-gradient-purple">Education</h2>
                     <div class="space-y-8 border-l border-gray-800 ml-3 pl-8">
-                        
                         <div class="relative">
                             <span class="absolute -left-[39px] top-1 h-5 w-5 rounded-full border-4 border-dark bg-accent-purple"></span>
-                            <h4 class="text-xl font-bold text-white">Bachelor of Business Administration</h4>
-                            <p class="text-accent-purple text-sm font-medium mb-1">Specialization in Business Analytics</p>
-                            <p class="text-gray-400 text-sm">Institute of Technology & Science • 2021 - 2024</p>
+                            <h4 class="text-lg md:text-xl font-bold text-white">Bachelor of Business Administration</h4>
+                            <p class="text-accent-purple text-xs md:text-sm font-medium mb-1">Specialization in Business Analytics</p>
+                            <p class="text-gray-400 text-xs md:text-sm">Institute of Technology & Science • 2021 - 2024</p>
                         </div>
-
                         <div class="relative">
-                            <span class="absolute -left-[39px] top-1 h-5 w-5 rounded-full border-4 border-dark bg-gray-600"></span>
-                            <h4 class="text-lg font-bold text-gray-200">Senior Secondary (XII)</h4>
-                            <p class="text-gray-400 text-sm">CBSE • Commerce with Maths • 2020 - 2021</p>
+                            <span class="absolute -left-[39px] top-1 h-5 w-5 rounded-full border-4 border-dark bg-gray-700"></span>
+                            <h4 class="text-base md:text-lg font-bold text-gray-300">Senior Secondary (XII)</h4>
+                            <p class="text-gray-500 text-xs md:text-sm">CBSE • Commerce with Maths • 2020 - 2021</p>
                         </div>
-
                          <div class="relative">
-                            <span class="absolute -left-[39px] top-1 h-5 w-5 rounded-full border-4 border-dark bg-gray-600"></span>
-                            <h4 class="text-lg font-bold text-gray-200">Secondary (X)</h4>
-                            <p class="text-gray-400 text-sm">CBSE</p>
+                            <span class="absolute -left-[39px] top-1 h-5 w-5 rounded-full border-4 border-dark bg-gray-700"></span>
+                            <h4 class="text-base md:text-lg font-bold text-gray-300">Secondary (X)</h4>
+                            <p class="text-gray-500 text-xs md:text-sm">CBSE</p>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- Certifications Column -->
                 <div class="reveal delay-300">
-                    <h2 class="font-serif text-3xl font-bold mb-8 text-gradient-teal">Certifications</h2>
+                    <h2 class="font-serif text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-gradient-teal">Certifications</h2>
                     <div class="glass-card p-6 space-y-4">
-                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors">
-                            <div class="mt-1 text-accent-teal"><i class="fas fa-certificate"></i></div>
+                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors group">
+                            <div class="mt-1 text-accent-teal group-hover:scale-110 transition-transform"><i class="fas fa-certificate"></i></div>
                             <div>
-                                <h4 class="font-bold text-sm md:text-base">Career Essentials in Data Analysis</h4>
-                                <p class="text-xs text-gray-400">Microsoft & LinkedIn</p>
+                                <h4 class="font-bold text-sm md:text-base text-gray-200">Career Essentials in Data Analysis</h4>
+                                <p class="text-xs text-gray-500">Microsoft & LinkedIn</p>
                             </div>
                         </div>
-
-                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors">
-                            <div class="mt-1 text-accent-teal"><i class="fas fa-certificate"></i></div>
+                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors group">
+                            <div class="mt-1 text-accent-teal group-hover:scale-110 transition-transform"><i class="fas fa-certificate"></i></div>
                             <div>
-                                <h4 class="font-bold text-sm md:text-base">Business Analysis & Process Mgmt</h4>
-                                <p class="text-xs text-gray-400">Coursera</p>
+                                <h4 class="font-bold text-sm md:text-base text-gray-200">Business Analysis & Process Mgmt</h4>
+                                <p class="text-xs text-gray-500">Coursera</p>
                             </div>
                         </div>
-
-                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors">
-                             <div class="mt-1 text-accent-teal"><i class="fas fa-briefcase"></i></div>
+                        <div class="flex items-start gap-4 p-3 hover:bg-white/5 rounded-lg transition-colors group">
+                             <div class="mt-1 text-accent-teal group-hover:scale-110 transition-transform"><i class="fas fa-briefcase"></i></div>
                              <div>
-                                 <h4 class="font-bold text-sm md:text-base">PwC Switzerland Job Simulation</h4>
-                                 <p class="text-xs text-gray-400">Forage • Power BI</p>
+                                 <h4 class="font-bold text-sm md:text-base text-gray-200">PwC Switzerland Job Simulation</h4>
+                                 <p class="text-xs text-gray-500">Forage • Power BI</p>
                              </div>
                         </div>
                     </div>
                 </div>
-
              </div>
         </section>
 
-        <!-- CONTACT SECTION -->
+        <!-- CONTACT SECTION: Dotted Map Theme -->
         <section id="contact" class="section">
-            <div class="content-wrapper text-center max-w-3xl px-4">
-                <p class="reveal text-accent-orange text-sm uppercase tracking-widest mb-4">What's Next?</p>
-                <h2 class="reveal delay-100 font-serif text-5xl md:text-7xl font-bold mb-8 text-white">
+            <div class="absolute inset-0 bg-dots z-0"></div> <!-- Dotted Background -->
+            
+            <div class="content-wrapper text-center max-w-3xl px-4 relative z-10">
+                <p class="reveal text-accent-orange text-xs md:text-sm uppercase tracking-widest mb-4">What's Next?</p>
+                <h2 class="reveal delay-100 font-serif text-4xl md:text-7xl font-bold mb-8 text-white">
                     Let's work <br> <span class="text-gradient-orange">together.</span>
                 </h2>
-                <p class="reveal delay-200 text-xl text-gray-400 mb-10 max-w-xl mx-auto">
+                <p class="reveal delay-200 text-lg md:text-xl text-gray-400 mb-10 max-w-xl mx-auto">
                     Available for immediate joining. Feel free to reach out via email or LinkedIn.
                 </p>
                 
                 <div class="reveal delay-300 flex flex-col md:flex-row gap-6 justify-center items-center">
-                    <a href="mailto:dibyanshukanungo@gmail.com" class="px-8 py-4 bg-white text-dark font-bold rounded-full hover:bg-gray-200 transition-colors">
+                    <a href="mailto:dibyanshukanungo@gmail.com" class="px-8 py-4 bg-white text-dark font-bold rounded-full hover:bg-gray-200 transition-colors w-full md:w-auto shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                         Send Email
                     </a>
                     
-                    <a href="https://linkedin.com/in/dibyanshu-kanungo-354a75288" target="_blank" class="px-8 py-4 border border-gray-700 rounded-full hover:border-accent-orange hover:text-accent-orange transition-colors flex items-center gap-2">
+                    <a href="https://linkedin.com/in/dibyanshu-kanungo-354a75288" target="_blank" class="px-8 py-4 border border-gray-700 rounded-full hover:border-accent-orange hover:text-accent-orange hover:bg-orange-500/10 transition-all flex items-center justify-center gap-2 w-full md:w-auto">
                         <i class="fab fa-linkedin"></i> LinkedIn
                     </a>
                 </div>
@@ -516,6 +505,8 @@
         // --- Typewriter Effect ---
         const textElement = document.getElementById('typewriter');
         const phrases = ["clarity.", "insights.", "action."];
+        // All words now use the same teal gradient class
+        const colors = ["text-gradient-teal", "text-gradient-teal", "text-gradient-teal"];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -523,6 +514,10 @@
 
         function type() {
             const currentPhrase = phrases[phraseIndex];
+            const currentColor = colors[phraseIndex];
+            
+            // Set the class for the current color
+            textElement.className = `font-medium pb-1 ${currentColor}`;
             
             if (isDeleting) {
                 textElement.textContent = currentPhrase.substring(0, charIndex - 1);
@@ -536,11 +531,11 @@
 
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2000; // Pause at end
+                typeSpeed = 2000;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 500; // Pause before new word
+                typeSpeed = 500;
             }
 
             setTimeout(type, typeSpeed);
@@ -558,16 +553,12 @@
             }
         }
 
-        const observerOptions = {
-            root: scroller,
-            threshold: 0.51 
-        };
+        const observerOptions = { root: scroller, threshold: 0.51 };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    
                     const id = entry.target.getAttribute('id');
                     navDots.forEach(dot => {
                         dot.classList.remove('active');
@@ -579,13 +570,9 @@
             });
         }, observerOptions);
 
-        sections.forEach(section => {
-            observer.observe(section);
-        });
-
-        // Start Typewriter
+        sections.forEach(section => observer.observe(section));
         document.addEventListener('DOMContentLoaded', type);
-
     </script>
 </body>
 </html>
+
